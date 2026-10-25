@@ -19,6 +19,21 @@ class PeerLink {
   int rx = 0; // bytes received from the peer (peer → target)
   int openStreams = 0;
   bool connected = false;
+
+  /// Most recent targets first. HTTPS stays encrypted: only host:port is known.
+  final List<Map<String, Object>> targets = [];
+
+  void record(String target, {required bool ok}) {
+    final at = DateTime.now().toIso8601String().substring(11, 19);
+    final last = targets.isEmpty ? null : targets.first;
+    if (last != null && last['target'] == target && last['ok'] == ok) {
+      last['at'] = at;
+      last['count'] = (last['count'] as int) + 1;
+      return;
+    }
+    targets.insert(0, {'target': target, 'at': at, 'ok': ok, 'count': 1});
+    if (targets.length > 15) targets.removeLast();
+  }
 }
 
 class ExitNode {
@@ -104,11 +119,13 @@ class ExitNode {
         socket = await dialGuarded(req.host, req.port, allowLan: allowLan);
       } catch (e) {
         _log('dial refused ${req.target}: $e');
+        link.record(req.target, ok: false);
         await send.writeAll(encodeErr(e.toString()));
         await send.finish();
         return;
       }
       await send.writeAll(encodeOk());
+      link.record(req.target, ok: true);
 
       // target → peer
       final down = Completer<void>();

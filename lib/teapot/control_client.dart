@@ -26,10 +26,14 @@ class Peer {
   Peer.fromJson(Map<String, dynamic> j)
     : nodeId = j['node_id'] as String,
       name = j['name'] as String?,
+      platform = j['platform'] as String?,
       online = j['online'] == true,
-      exit = j['exit'] == true;
+      exit = j['exit'] == true,
+      publicIpv4 = j['public_ipv4'] as String?;
   final String nodeId;
   final String? name;
+  final String? platform;
+  final String? publicIpv4;
   final bool online;
   final bool exit;
   String get label => name ?? nodeId.substring(0, 8);

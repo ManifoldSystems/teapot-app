@@ -31,6 +31,7 @@ class TeapotAgent {
   bool exitEnabled = false;
   int allowed = 0;
   Map<String, String> _names = {};
+  List<Peer> _peers = [];
   final List<String> _log = [];
 
   String get name => settings.deviceName.isNotEmpty
@@ -112,7 +113,8 @@ class TeapotAgent {
       exitEnabled = list.exitEnabled;
       allowed = list.allow.length;
       _exit!.setAllowed(list.allow);
-      _names = {for (final p in await control.peers()) p.nodeId: p.label};
+      _peers = await control.peers();
+      _names = {for (final p in _peers) p.nodeId: p.label};
       phase = 'approved';
       error = null;
     } on ApiException catch (e) {
@@ -190,6 +192,21 @@ class TeapotAgent {
             'streams': e.value.openStreams,
             'tx': e.value.tx,
             'rx': e.value.rx,
+            'targets': [
+              for (final t in e.value.targets) Map<String, Object>.of(t),
+            ],
+          },
+      ],
+      'peers': [
+        for (final p in _peers)
+          {
+            'node_id': p.nodeId,
+            'name': p.label,
+            'platform': p.platform,
+            'online': p.online,
+            'exit': p.exit,
+            'ipv4': p.publicIpv4,
+            'using_me': _exit?.links[p.nodeId]?.connected ?? false,
           },
       ],
       'log': List<String>.of(_log),

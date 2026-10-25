@@ -24,7 +24,8 @@ lib/teapot/
   agent.dart           orchestration inside the service; emits snapshots for the UI
   service.dart         flutter_foreground_task: TeapotTaskHandler (agent isolate) + TeapotController (UI)
   settings.dart        control URL, device name, allow LAN (shared_preferences)
-lib/screens/tabs/home_tab.dart        status: phase, approve link, exit, public IP, clients, log
+lib/screens/tabs/home_tab.dart        status: phase, approve link, exit, public IP, clients (+ recent targets), log
+lib/screens/tabs/mesh_tab.dart        every approved device: online, exit, IPv4, "using this phone"
 lib/widgets/teapot_settings_card.dart settings; saving restarts the service
 test/teapot_test.dart                 protocol, LAN guard, status report
 ```
@@ -45,6 +46,21 @@ flutter build apk --debug  # needs Android SDK licenses accepted + NDK r28 (28.2
 First Android build compiles iroh's Rust core per ABI through cargokit /
 cargo-ndk (Rust Android targets are installed on the owner's Mac). Accepting
 SDK licenses is the owner's action: `flutter doctor --android-licenses`.
+
+## Gotchas
+
+- `MainLayout` (from the starter) wraps every tab in a `SingleChildScrollView`.
+  A tab's `ListView` must be `shrinkWrap: true` with
+  `NeverScrollableScrollPhysics`, or it throws and a **release build shows a
+  blank tab**. This hid the approve button on the first device test.
+- `adb exec-out screencap` on this vivo prints a "Multiple displays" warning
+  into the PNG; use `adb shell screencap -p /sdcard/x.png` + `adb pull`.
+- Maven Central blocks the office IP ("open proxy"). Build with Gradle going
+  through the local teapot proxy, Google's repo direct:
+
+  ```bash
+  JAVA_TOOL_OPTIONS="-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1080 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=1080 -Dhttp.nonProxyHosts=localhost|127.0.0.1|dl.google.com|*.google.com|*.googleapis.com|*.gstatic.com -Dorg.gradle.internal.http.connectionTimeout=120000 -Dorg.gradle.internal.http.socketTimeout=120000" flutter build apk --release --target-platform android-arm64
+  ```
 
 ## Decisions
 

@@ -445,6 +445,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exempt Teapot so Android does not stop it in the background'**
   String get batterySubtitle;
+
+  /// No description provided for @meshLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mesh'**
+  String get meshLabel;
+
+  /// No description provided for @meshTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Devices in your mesh'**
+  String get meshTitle;
+
+  /// No description provided for @meshEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No other approved devices yet'**
+  String get meshEmpty;
+
+  /// No description provided for @peerOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'online'**
+  String get peerOnline;
+
+  /// No description provided for @peerOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'offline'**
+  String get peerOffline;
+
+  /// No description provided for @peerExit.
+  ///
+  /// In en, this message translates to:
+  /// **'exit'**
+  String get peerExit;
+
+  /// No description provided for @peerUsingMe.
+  ///
+  /// In en, this message translates to:
+  /// **'using this phone'**
+  String get peerUsingMe;
+
+  /// No description provided for @recentTargets.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent destinations'**
+  String get recentTargets;
+
+  /// No description provided for @targetRefused.
+  ///
+  /// In en, this message translates to:
+  /// **'refused'**
+  String get targetRefused;
 }
 
 class _AppLocalizationsDelegate

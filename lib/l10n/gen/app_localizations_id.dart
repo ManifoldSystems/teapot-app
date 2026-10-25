@@ -196,4 +196,31 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get batterySubtitle =>
       'Kecualikan Teapot supaya Android tidak menghentikannya di latar belakang';
+
+  @override
+  String get meshLabel => 'Mesh';
+
+  @override
+  String get meshTitle => 'Device di mesh kamu';
+
+  @override
+  String get meshEmpty => 'Belum ada device lain yang disetujui';
+
+  @override
+  String get peerOnline => 'online';
+
+  @override
+  String get peerOffline => 'offline';
+
+  @override
+  String get peerExit => 'exit';
+
+  @override
+  String get peerUsingMe => 'memakai HP ini';
+
+  @override
+  String get recentTargets => 'Tujuan terakhir';
+
+  @override
+  String get targetRefused => 'ditolak';
 }

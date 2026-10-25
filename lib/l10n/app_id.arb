@@ -57,5 +57,14 @@
   "saveButton": "Simpan",
   "settingsSaved": "Tersimpan. Teapot menyala ulang dengan pengaturan baru.",
   "batteryTitle": "Optimasi baterai",
-  "batterySubtitle": "Kecualikan Teapot supaya Android tidak menghentikannya di latar belakang"
+  "batterySubtitle": "Kecualikan Teapot supaya Android tidak menghentikannya di latar belakang",
+  "meshLabel": "Mesh",
+  "meshTitle": "Device di mesh kamu",
+  "meshEmpty": "Belum ada device lain yang disetujui",
+  "peerOnline": "online",
+  "peerOffline": "offline",
+  "peerExit": "exit",
+  "peerUsingMe": "memakai HP ini",
+  "recentTargets": "Tujuan terakhir",
+  "targetRefused": "ditolak"
 }

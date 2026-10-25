@@ -30,6 +30,10 @@ class HomeTab extends StatelessWidget {
     final log = ((s['log'] as List?) ?? const []).cast<String>();
 
     return ListView(
+      // MainLayout already scrolls (SingleChildScrollView); an unbounded
+      // ListView there renders nothing in release builds.
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Spacing.md),
       children: [
         _PhaseCard(snapshot: s, phase: phase, l10n: l10n, onStop: ctrl.stop),
@@ -269,7 +273,7 @@ class _ClientsCard extends StatelessWidget {
             )
           else
             for (final c in clients)
-              ListTile(
+              ExpansionTile(
                 dense: true,
                 leading: Icon(
                   Icons.circle,
@@ -280,6 +284,56 @@ class _ClientsCard extends StatelessWidget {
                 subtitle: Text(
                   '${c['kind']} · ↑${_bytes(c['tx'] as int)} ↓${_bytes(c['rx'] as int)}',
                 ),
+                childrenPadding: const EdgeInsets.fromLTRB(
+                  Spacing.md,
+                  0,
+                  Spacing.md,
+                  Spacing.sm,
+                ),
+                expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.recentTargets,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const Gap(Spacing.xs),
+                  for (final t
+                      in ((c['targets'] as List?) ?? const []).cast<Map>())
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        children: [
+                          Text(
+                            '${t['at']}',
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const Gap(Spacing.sm),
+                          Expanded(
+                            child: Text(
+                              '${t['target']}${(t['count'] as int) > 1 ? ' ×${t['count']}' : ''}',
+                              style: const TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (t['ok'] != true)
+                            Text(
+                              l10n.targetRefused,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
         ],
       ),

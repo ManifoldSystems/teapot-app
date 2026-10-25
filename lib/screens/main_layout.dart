@@ -36,6 +36,7 @@ class _MainLayoutState extends State<MainLayout> with WidgetsBindingObserver {
     final l10n = AppLocalizations.of(context)!;
     return [
       NavItem(label: l10n.homeLabel, icon: Icons.home, route: AppRoutes.home),
+      NavItem(label: l10n.meshLabel, icon: Icons.hub, route: AppRoutes.mesh),
       NavItem(
         label: l10n.settingsLabel,
         icon: Icons.settings,

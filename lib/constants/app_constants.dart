@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 /// Navigation routes
 class AppRoutes {
   static const String home = '/home';
+  static const String mesh = '/mesh';
   static const String settings = '/settings';
   static const String talker = '/talker';
 }

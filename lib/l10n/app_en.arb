@@ -63,5 +63,14 @@
   "saveButton": "Save",
   "settingsSaved": "Saved. Teapot restarts with the new settings.",
   "batteryTitle": "Battery optimisation",
-  "batterySubtitle": "Exempt Teapot so Android does not stop it in the background"
+  "batterySubtitle": "Exempt Teapot so Android does not stop it in the background",
+  "meshLabel": "Mesh",
+  "meshTitle": "Devices in your mesh",
+  "meshEmpty": "No other approved devices yet",
+  "peerOnline": "online",
+  "peerOffline": "offline",
+  "peerExit": "exit",
+  "peerUsingMe": "using this phone",
+  "recentTargets": "Recent destinations",
+  "targetRefused": "refused"
 }

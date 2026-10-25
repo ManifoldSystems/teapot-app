@@ -7,6 +7,7 @@ import '../constants/app_constants.dart';
 import '../main.dart';
 import '../screens/main_layout.dart';
 import '../screens/tabs/home_tab.dart';
+import '../screens/tabs/mesh_tab.dart';
 import '../screens/tabs/settings_tab.dart';
 
 /// App router configuration using GoRouter
@@ -24,6 +25,12 @@ final appRouter = GoRouter(
           name: 'home',
           pageBuilder: (context, state) =>
               const NoTransitionPage(child: HomeTab()),
+        ),
+        GoRoute(
+          path: AppRoutes.mesh,
+          name: 'mesh',
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: MeshTab()),
         ),
         GoRoute(
           path: AppRoutes.settings,

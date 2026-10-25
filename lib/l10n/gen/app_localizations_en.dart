@@ -196,4 +196,31 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get batterySubtitle =>
       'Exempt Teapot so Android does not stop it in the background';
+
+  @override
+  String get meshLabel => 'Mesh';
+
+  @override
+  String get meshTitle => 'Devices in your mesh';
+
+  @override
+  String get meshEmpty => 'No other approved devices yet';
+
+  @override
+  String get peerOnline => 'online';
+
+  @override
+  String get peerOffline => 'offline';
+
+  @override
+  String get peerExit => 'exit';
+
+  @override
+  String get peerUsingMe => 'using this phone';
+
+  @override
+  String get recentTargets => 'Recent destinations';
+
+  @override
+  String get targetRefused => 'refused';
 }
