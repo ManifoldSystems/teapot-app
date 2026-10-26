@@ -98,6 +98,90 @@ abstract class AppLocalizations {
     Locale('id'),
   ];
 
+  /// No description provided for @logsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mesh logs'**
+  String get logsTitle;
+
+  /// No description provided for @logsLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Local history'**
+  String get logsLocal;
+
+  /// No description provided for @logsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All devices'**
+  String get logsAll;
+
+  /// No description provided for @logsThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device (control)'**
+  String get logsThisDevice;
+
+  /// No description provided for @logsLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get logsLive;
+
+  /// No description provided for @logsPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get logsPaused;
+
+  /// No description provided for @logsReconnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting · check connection and device approval'**
+  String get logsReconnecting;
+
+  /// No description provided for @logsConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting…'**
+  String get logsConnecting;
+
+  /// No description provided for @logsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load logs'**
+  String get logsError;
+
+  /// No description provided for @logsPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get logsPause;
+
+  /// No description provided for @logsResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get logsResume;
+
+  /// No description provided for @logsCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy visible logs'**
+  String get logsCopy;
+
+  /// No description provided for @logsSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter messages…'**
+  String get logsSearch;
+
+  /// No description provided for @logsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching logs yet'**
+  String get logsEmpty;
+
   /// No description provided for @homeLabel.
   ///
   /// In en, this message translates to:

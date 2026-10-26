@@ -6,6 +6,7 @@ import 'package:teapot_app/l10n/gen/app_localizations.dart';
 
 import '../../constants/app_constants.dart';
 import '../../teapot/service.dart';
+import '../logs_screen.dart';
 
 /// Every approved device in the mesh, as control reports it.
 class MeshTab extends StatelessWidget {
@@ -32,6 +33,18 @@ class MeshTab extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Spacing.md),
       children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            icon: const Icon(Icons.receipt_long),
+            label: Text(l10n.logsTitle),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const LogsScreen(device: ''),
+              ),
+            ),
+          ),
+        ),
         Text(
           l10n.meshTitle,
           style: const TextStyle(
@@ -55,6 +68,11 @@ class MeshTab extends StatelessWidget {
                 for (final (i, p) in sorted.indexed) ...[
                   if (i > 0) const Divider(height: 1),
                   ListTile(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => LogsScreen(device: '${p['node_id']}'),
+                      ),
+                    ),
                     leading: Icon(
                       _icon('${p['platform']}'),
                       color: p['online'] == true ? Colors.green : Colors.grey,

@@ -14,6 +14,7 @@ import 'key_store.dart';
 import 'lan_guard.dart';
 import 'protocol.dart';
 import 'settings.dart';
+import 'log_store.dart';
 
 class TeapotAgent {
   TeapotAgent(this.settings, this._emit);
@@ -39,6 +40,9 @@ class TeapotAgent {
   String? _deviceName;
   String? _model;
   final List<String> _log = [];
+  final _logs = LogStore();
+  Timer? _logTimer;
+  bool _uploading = false;
 
   /// Settings override, else the phone's own device name, else `android-<id>`.
   /// The owner can still give it an alias in the dashboard.
@@ -49,6 +53,13 @@ class TeapotAgent {
   }
 
   Future<void> start() async {
+    try {
+      await _logs.init();
+    } catch (e) {
+      log('local log storage unavailable: $e', level: 'warn');
+    }
+    log('agent starting');
+    _logTimer = Timer.periodic(const Duration(seconds: 5), (_) => _flushLogs());
     try {
       final info = await DeviceInfoPlugin().androidInfo;
       _model = '${info.manufacturer} ${info.model}'.trim();
@@ -83,14 +94,34 @@ class TeapotAgent {
           presence = on;
           push();
         },
-        log: log,
+        log: (message) => log(message, level: 'warn', source: 'control'),
       ),
     );
   }
 
   Future<void> stop() async {
+    log('agent stopping');
+    _logTimer?.cancel();
     if (!_stop.isCompleted) _stop.complete();
     await _endpoint?.close();
+    await _logs.flush();
+    await _flushLogs().timeout(const Duration(seconds: 2), onTimeout: () {});
+  }
+
+  Future<void> _flushLogs() async {
+    await _logs.flush();
+    if (_uploading || _control == null || _logs.pending.isEmpty) return;
+    _uploading = true;
+    final batch = _logs.pending.take(20).toList();
+    try {
+      await _control!.uploadLogs(batch);
+      final ids = batch.map((e) => e['id']).toSet();
+      _logs.pending.removeWhere((e) => ids.contains(e['id']));
+    } catch (_) {
+      // Keep the batch for retry; transport errors must not feed back into logs.
+    } finally {
+      _uploading = false;
+    }
   }
 
   /// Logs in (retrying while offline), registers as an exit-capable device,
@@ -129,6 +160,7 @@ class TeapotAgent {
 
   Future<void> _sync() async {
     final control = _control!;
+    final previousError = error;
     try {
       final list = await control.allowlist();
       if (exitEnabled != list.exitEnabled) {
@@ -153,6 +185,9 @@ class TeapotAgent {
       }
     } catch (e) {
       error = 'sync: $e';
+    }
+    if (error != null && error != previousError) {
+      log(error!, level: 'warn', source: 'control');
     }
     push();
   }
@@ -243,16 +278,17 @@ class TeapotAgent {
     };
   }
 
-  void log(String line) {
+  void log(String line, {String level = 'info', String source = 'agent'}) {
     final t = DateTime.now().toIso8601String().substring(11, 19);
-    _log.add('$t $line');
-    if (_log.length > 80) _log.removeAt(0);
+    _log.add('$t ${level.toUpperCase()} $line');
+    if (_log.length > 200) _log.removeAt(0);
+    _logs.add(line, level: level, source: source);
   }
 
   void _fail(String message) {
     phase = phase == 'starting' ? 'error' : phase;
     error = message;
-    log(message);
+    log(message, level: 'error');
     push();
   }
 }

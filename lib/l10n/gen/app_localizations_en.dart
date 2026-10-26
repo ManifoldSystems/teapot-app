@@ -9,6 +9,49 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get logsTitle => 'Mesh logs';
+
+  @override
+  String get logsLocal => 'Local history';
+
+  @override
+  String get logsAll => 'All devices';
+
+  @override
+  String get logsThisDevice => 'This device (control)';
+
+  @override
+  String get logsLive => 'Live';
+
+  @override
+  String get logsPaused => 'Paused';
+
+  @override
+  String get logsReconnecting =>
+      'Reconnecting · check connection and device approval';
+
+  @override
+  String get logsConnecting => 'Connecting…';
+
+  @override
+  String get logsError => 'Could not load logs';
+
+  @override
+  String get logsPause => 'Pause';
+
+  @override
+  String get logsResume => 'Resume';
+
+  @override
+  String get logsCopy => 'Copy visible logs';
+
+  @override
+  String get logsSearch => 'Filter messages…';
+
+  @override
+  String get logsEmpty => 'No matching logs yet';
+
+  @override
   String get homeLabel => 'Status';
 
   @override

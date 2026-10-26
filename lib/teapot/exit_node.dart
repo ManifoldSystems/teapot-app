@@ -37,12 +37,15 @@ class PeerLink {
 }
 
 class ExitNode {
-  ExitNode(this.endpoint, {this.allowLan = false, void Function(String)? log})
-    : _log = log ?? ((_) {});
+  ExitNode(
+    this.endpoint, {
+    this.allowLan = false,
+    void Function(String, {String level, String source})? log,
+  }) : _log = log ?? ((_, {String level = 'info', String source = 'exit'}) {});
 
   final Endpoint endpoint;
   final bool allowLan;
-  final void Function(String) _log;
+  final void Function(String, {String level, String source}) _log;
 
   /// Hex endpoint ids allowed to use this exit; replaced by [setAllowed].
   Set<String> _allowed = {};
@@ -54,7 +57,11 @@ class ExitNode {
     _allowed = allowed;
     for (final entry in _conns.entries.toList()) {
       if (!_allowed.contains(entry.key)) {
-        _log('${_short(entry.key)} removed from allowlist; disconnecting');
+        _log(
+          '${_short(entry.key)} removed from allowlist; disconnecting',
+          level: 'warn',
+          source: 'exit',
+        );
         entry.value.close(errorCode: 1, reason: utf8.encode('not allowed'));
       }
     }
@@ -66,7 +73,7 @@ class ExitNode {
       try {
         conn = await endpoint.accept();
       } catch (e) {
-        _log('accept: $e');
+        _log('accept: $e', level: 'error', source: 'exit');
         continue;
       }
       if (conn == null) return; // endpoint closed
@@ -77,17 +84,25 @@ class ExitNode {
   Future<void> _serve(Connection conn) async {
     final peer = conn.remoteId.toHex();
     if (!_allowed.contains(peer)) {
-      _log('rejected ${_short(peer)}: not in allowlist');
+      _log(
+        'rejected ${_short(peer)}: not in allowlist',
+        level: 'warn',
+        source: 'exit',
+      );
       conn.close(errorCode: 1, reason: utf8.encode('not allowed'));
       return;
     }
     final link = links.putIfAbsent(peer, PeerLink.new)..connected = true;
     _conns[peer] = conn;
-    _log('client ${_short(peer)} connected');
+    _log('client ${_short(peer)} connected', source: 'exit');
     final paths = conn.pathEvents().listen((e) {
       if (e is PathSelected) {
         link.remoteAddr = e.remoteAddr;
         link.kind = e.remoteAddr.contains('Relay') ? 'relay' : 'direct';
+        _log(
+          'client ${_short(peer)} path=${link.kind} address=${e.remoteAddr}',
+          source: 'exit',
+        );
       }
     });
     try {
@@ -96,7 +111,7 @@ class ExitNode {
         unawaited(_stream(send, recv, link, peer));
       }
     } catch (e) {
-      _log('client ${_short(peer)} disconnected');
+      _log('client ${_short(peer)} disconnected: $e', source: 'exit');
     } finally {
       await paths.cancel();
       link.connected = false;
@@ -118,7 +133,11 @@ class ExitNode {
       try {
         socket = await dialGuarded(req.host, req.port, allowLan: allowLan);
       } catch (e) {
-        _log('dial refused ${req.target}: $e');
+        _log(
+          'peer=${_short(peer)} dial refused ${req.target}: $e',
+          level: 'warn',
+          source: 'exit',
+        );
         link.record(req.target, ok: false);
         await send.writeAll(encodeErr(e.toString()));
         await send.finish();
@@ -126,6 +145,11 @@ class ExitNode {
       }
       await send.writeAll(encodeOk());
       link.record(req.target, ok: true);
+      _log(
+        'peer=${_short(peer)} tunnel open target=${req.target}',
+        level: 'debug',
+        source: 'exit',
+      );
 
       // target → peer
       final down = Completer<void>();
@@ -169,7 +193,7 @@ class ExitNode {
       await sub.cancel();
       await send.finish().catchError((Object _) {});
     } catch (e) {
-      _log('stream ${_short(peer)}: $e');
+      _log('stream ${_short(peer)}: $e', level: 'warn', source: 'exit');
     } finally {
       socket?.destroy();
       link.openStreams--;

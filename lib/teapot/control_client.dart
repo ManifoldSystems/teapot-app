@@ -146,6 +146,101 @@ class ControlClient {
     );
   }
 
+  Future<void> uploadLogs(List<Map<String, dynamic>> entries) async {
+    await _call('POST', '/v1/logs', body: {'entries': entries});
+  }
+
+  /// Dedicated viewer connection; it never replaces the agent's presence.
+  Future<void> watchLogs({
+    String? device,
+    String level = 'info',
+    int after = 0,
+    required Future<void> stop,
+    required void Function(List<Map<String, dynamic>>) onEntries,
+    required void Function(String) onState,
+  }) async {
+    var stopped = false;
+    var cursor = after;
+    unawaited(stop.then((_) => stopped = true));
+    while (!stopped) {
+      IOWebSocketChannel? ws;
+      Timer? ping;
+      StreamSubscription<dynamic>? sub;
+      try {
+        onState('connecting');
+        if (_token == null) await login();
+        if (stopped) break;
+        final uri =
+            Uri.parse(
+              '${base.replaceFirst('https://', 'wss://').replaceFirst('http://', 'ws://')}/v1/logs/stream',
+            ).replace(
+              queryParameters: {
+                if (device != null && device.isNotEmpty) 'device': device,
+                'level': level,
+                if (cursor > 0) 'after': '$cursor',
+              },
+            );
+        final socket = ws = IOWebSocketChannel.connect(
+          uri,
+          headers: {'authorization': 'Bearer $_token', 'user-agent': userAgent},
+          connectTimeout: const Duration(seconds: 15),
+        );
+        await socket.ready;
+        if (stopped) break;
+        onState('live');
+        final done = Completer<void>();
+        var heard = DateTime.now();
+        ping = Timer.periodic(const Duration(seconds: 15), (_) {
+          if (DateTime.now().difference(heard).inSeconds > 45) {
+            if (!done.isCompleted) done.complete();
+          } else {
+            socket.sink.add('ping');
+          }
+        });
+        sub = socket.stream.listen(
+          (raw) {
+            heard = DateTime.now();
+            if (raw == 'pong' || raw is! String) return;
+            try {
+              final message = jsonDecode(raw) as Map;
+              final entries = <Map<String, dynamic>>[];
+              for (final item in (message['entries'] as List? ?? [])) {
+                final e = Map<String, dynamic>.from(item as Map);
+                if ((e['cursor'] as int) > cursor) {
+                  cursor = e['cursor'] as int;
+                  entries.add(e);
+                }
+              }
+              if (!stopped) onEntries(entries);
+            } catch (_) {
+              if (!done.isCompleted) done.complete();
+            }
+          },
+          onDone: () {
+            if (!done.isCompleted) done.complete();
+          },
+          onError: (Object _) {
+            if (!done.isCompleted) done.complete();
+          },
+        );
+        await Future.any([stop, done.future]);
+      } catch (_) {
+        // Authenticate again after an expired token or revoked subscription.
+        _token = null;
+      } finally {
+        ping?.cancel();
+        await sub?.cancel();
+        await ws?.sink.close();
+      }
+      if (!stopped) {
+        onState('reconnecting');
+        await Future.any([stop, Future.delayed(const Duration(seconds: 5))]);
+      }
+    }
+  }
+
+  void close() => _http.close(force: true);
+
   /// Authenticated call; on 401 logs in again once (expired token, or the
   /// device was removed and has to re-register).
   Future<dynamic> _call(

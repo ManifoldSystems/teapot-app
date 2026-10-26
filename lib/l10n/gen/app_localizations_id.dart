@@ -9,6 +9,49 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
+  String get logsTitle => 'Log mesh';
+
+  @override
+  String get logsLocal => 'Riwayat lokal';
+
+  @override
+  String get logsAll => 'Semua device';
+
+  @override
+  String get logsThisDevice => 'Device ini (control)';
+
+  @override
+  String get logsLive => 'Live';
+
+  @override
+  String get logsPaused => 'Dijeda';
+
+  @override
+  String get logsReconnecting =>
+      'Menghubungkan ulang · cek koneksi dan approval device';
+
+  @override
+  String get logsConnecting => 'Menghubungkan…';
+
+  @override
+  String get logsError => 'Log tidak bisa dimuat';
+
+  @override
+  String get logsPause => 'Jeda';
+
+  @override
+  String get logsResume => 'Lanjutkan';
+
+  @override
+  String get logsCopy => 'Salin log yang tampil';
+
+  @override
+  String get logsSearch => 'Cari pesan…';
+
+  @override
+  String get logsEmpty => 'Belum ada log yang cocok';
+
+  @override
   String get homeLabel => 'Status';
 
   @override

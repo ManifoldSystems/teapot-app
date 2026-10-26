@@ -9,6 +9,7 @@ import 'package:teapot_app/l10n/gen/app_localizations.dart';
 import '../../constants/app_constants.dart';
 import '../../teapot/service.dart';
 import '../../utils/toast_helper.dart';
+import '../logs_screen.dart';
 
 /// Status of the Teapot agent running in the foreground service.
 class HomeTab extends StatelessWidget {
@@ -53,6 +54,13 @@ class HomeTab extends StatelessWidget {
         ],
         const Gap(Spacing.sm),
         _LogCard(lines: log, l10n: l10n),
+        TextButton.icon(
+          icon: const Icon(Icons.receipt_long),
+          label: Text(l10n.logsTitle),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (_) => const LogsScreen())),
+        ),
       ],
     );
   }
@@ -84,6 +92,12 @@ class _Stopped extends StatelessWidget {
               onPressed: onStart,
               icon: const Icon(Icons.power_settings_new),
               label: Text(l10n.startButton),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const LogsScreen()),
+              ),
+              child: Text(l10n.logsTitle),
             ),
           ],
         ),
