@@ -12,6 +12,10 @@ flutter build apk --debug
 
 ## Logs
 
+From 1.1.0+2, the service reports the installed package version/build and
+presence protocol to control. Reconnects use randomized exponential backoff;
+the control version and presence generation appear in handshake logs.
+
 **Mesh logs** is available from Status (even when stopped) and Mesh. Tap a peer
 in Mesh to follow its logs, or choose local history, this device's control
 history, another approved device, all devices, or control itself. The viewer

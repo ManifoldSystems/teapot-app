@@ -4,13 +4,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:iroh_flutter/iroh_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:web_socket_channel/io.dart';
 
 /// Cloudflare rejects library-default user agents (error 1010).
-const userAgent = 'teapot-android/1.0.0';
+const userAgent = 'teapot-android/1.1.0';
 
 class ApiException implements Exception {
   ApiException(this.status, this.code, this.message);
@@ -288,7 +290,7 @@ class ControlClient {
     while (!stopped) {
       final started = DateTime.now();
       try {
-        await _presenceOnce(report, stop, onState);
+        await _presenceOnce(report, stop, onState, log);
       } catch (e) {
         log?.call('presence: $e');
       }
@@ -297,7 +299,13 @@ class ControlClient {
       if (DateTime.now().difference(started) > const Duration(seconds: 30)) {
         backoff = const Duration(seconds: 1);
       }
-      await Future.any([Future.delayed(backoff), stop]);
+      final delay = Duration(
+        milliseconds:
+            (backoff.inMilliseconds * (0.5 + Random().nextDouble() * 0.5))
+                .round(),
+      );
+      log?.call('presence reconnect in ${delay.inMilliseconds}ms');
+      await Future.any([Future.delayed(delay), stop]);
       backoff = backoff * 2 > const Duration(seconds: 60)
           ? const Duration(seconds: 60)
           : backoff * 2;
@@ -308,8 +316,10 @@ class ControlClient {
     StatusReport Function() report,
     Future<void> stop,
     void Function(bool)? onState,
+    void Function(String)? log,
   ) async {
     if (_token == null) await login();
+    final package = await PackageInfo.fromPlatform();
     final uri = Uri.parse(
       '${base.replaceFirst('https://', 'wss://').replaceFirst('http://', 'ws://')}/v1/presence',
     );
@@ -317,7 +327,13 @@ class ControlClient {
     try {
       ws = IOWebSocketChannel.connect(
         uri,
-        headers: {'authorization': 'Bearer $_token', 'user-agent': userAgent},
+        headers: {
+          'authorization': 'Bearer $_token',
+          'user-agent': userAgent,
+          'x-teapot-version': '${package.version}+${package.buildNumber}',
+          'x-teapot-protocol': '1',
+        },
+        connectTimeout: const Duration(seconds: 15),
       );
       await ws.ready;
     } on WebSocketException catch (e) {
@@ -360,7 +376,21 @@ class ControlClient {
     final sub = ws.stream.listen(
       (m) {
         lastHeard = DateTime.now();
-        if (m is String && m.contains('"peers_changed"')) _changed.add(null);
+        if (m is String && m != 'pong') {
+          try {
+            final message = jsonDecode(m);
+            if (message is Map && message['type'] == 'peers_changed') {
+              _changed.add(null);
+            }
+            if (message is Map && message['type'] == 'hello') {
+              log?.call(
+                'control handshake protocol=${message['protocol']} version=${message['control_version']} generation=${message['presence_generation']}',
+              );
+            }
+          } on FormatException {
+            /* Ignore unknown legacy frames. */
+          }
+        }
       },
       onDone: () => done.isCompleted ? null : done.complete(),
       onError: (Object e) => done.isCompleted ? null : done.completeError(e),

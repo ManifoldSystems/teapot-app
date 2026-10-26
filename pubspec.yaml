@@ -1,7 +1,7 @@
 name: teapot_app
 description: "Teapot — personal mesh on iroh. Android exit node."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.10.7
@@ -41,6 +41,7 @@ dependencies:
   url_launcher: ^6.3.3
   flutter_foreground_task: ^11.0.3
   device_info_plus: ^13.3.0
+  package_info_plus: ^10.2.2
 
 dev_dependencies:
   flutter_test:
