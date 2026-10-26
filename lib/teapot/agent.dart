@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:iroh_flutter/iroh_flutter.dart';
 
 import 'control_client.dart';
@@ -33,13 +34,28 @@ class TeapotAgent {
   int allowed = 0;
   Map<String, String> _names = {};
   List<Peer> _peers = [];
+
+  /// From the phone: the "Device name" in Android settings, and brand + model.
+  String? _deviceName;
+  String? _model;
   final List<String> _log = [];
 
-  String get name => settings.deviceName.isNotEmpty
-      ? settings.deviceName
-      : 'android-${_control?.nodeId.substring(0, 6) ?? ''}';
+  /// Settings override, else the phone's own device name, else `android-<id>`.
+  /// The owner can still give it an alias in the dashboard.
+  String get name {
+    if (settings.deviceName.isNotEmpty) return settings.deviceName;
+    if (_deviceName != null && _deviceName!.isNotEmpty) return _deviceName!;
+    return 'android-${_control?.nodeId.substring(0, 6) ?? ''}';
+  }
 
   Future<void> start() async {
+    try {
+      final info = await DeviceInfoPlugin().androidInfo;
+      _model = '${info.manufacturer} ${info.model}'.trim();
+      _deviceName = info.name.trim().isNotEmpty ? info.name.trim() : _model;
+    } catch (e) {
+      log('device info: $e');
+    }
     try {
       await Iroh.init();
       final key = await KeyStore().loadOrCreate();
@@ -84,7 +100,12 @@ class TeapotAgent {
     while (!_stop.isCompleted) {
       try {
         final status = await control.login();
-        await control.updateMe(name: name, platform: 'android', canExit: true);
+        await control.updateMe(
+          name: name,
+          platform: 'android',
+          model: _model,
+          canExit: true,
+        );
         phase = status == 'approved' ? 'approved' : 'pending';
         error = null;
         log('logged in to control ($phase)');
@@ -181,6 +202,7 @@ class TeapotAgent {
       'error': error,
       'node_id': _control?.nodeId,
       'name': name,
+      'model': _model,
       'control': settings.controlUrl,
       'approve_url': _control?.approveUrl,
       'presence': presence,

@@ -40,6 +40,7 @@ dependencies:
   web_socket_channel: ^3.0.3
   url_launcher: ^6.3.3
   flutter_foreground_task: ^11.0.3
+  device_info_plus: ^13.3.0
 
 dev_dependencies:
   flutter_test:

@@ -117,16 +117,21 @@ class ControlClient {
   Future<Map<String, dynamic>> me() async =>
       await _call('GET', '/v1/devices/me') as Map<String, dynamic>;
 
-  Future<void> updateMe({String? name, String? platform, bool? canExit}) =>
-      _call(
-        'PUT',
-        '/v1/devices/me',
-        body: {
-          if (name != null) 'name': name,
-          if (platform != null) 'platform': platform,
-          if (canExit != null) 'can_exit': canExit,
-        },
-      );
+  Future<void> updateMe({
+    String? name,
+    String? platform,
+    String? model,
+    bool? canExit,
+  }) => _call(
+    'PUT',
+    '/v1/devices/me',
+    body: {
+      if (name != null) 'name': name,
+      if (platform != null) 'platform': platform,
+      if (model != null) 'model': model,
+      if (canExit != null) 'can_exit': canExit,
+    },
+  );
 
   Future<List<Peer>> peers() async {
     final data = await _call('GET', '/v1/peers') as List;
