@@ -66,5 +66,6 @@
   "peerExit": "exit",
   "peerUsingMe": "memakai HP ini",
   "recentTargets": "Tujuan terakhir",
-  "targetRefused": "ditolak"
+  "targetRefused": "ditolak",
+  "presenceSince": "Terhubung ke control sejak {time}"
 }

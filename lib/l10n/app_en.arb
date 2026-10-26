@@ -72,5 +72,13 @@
   "peerExit": "exit",
   "peerUsingMe": "using this phone",
   "recentTargets": "Recent destinations",
-  "targetRefused": "refused"
+  "targetRefused": "refused",
+  "presenceSince": "Connected to control since {time}",
+  "@presenceSince": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

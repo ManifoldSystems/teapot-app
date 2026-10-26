@@ -223,4 +223,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get targetRefused => 'refused';
+
+  @override
+  String presenceSince(String time) {
+    return 'Connected to control since $time';
+  }
 }

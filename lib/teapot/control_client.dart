@@ -229,10 +229,25 @@ class ControlClient {
 
     String? lastSent;
     var lastSentAt = DateTime.fromMillisecondsSinceEpoch(0);
-    final ping = Timer.periodic(
-      const Duration(seconds: 20),
-      (_) => ws.sink.add('ping'),
-    );
+    // No message at all (not even a pong) for 45 s means the socket is dead
+    // even if TCP has not noticed: mobile CGNAT drops idle flows silently.
+    // Seen: this phone stayed "connected" to nothing for 8 hours.
+    var lastHeard = DateTime.now();
+    final done = Completer<void>();
+    final ping = Timer.periodic(const Duration(seconds: 20), (_) {
+      final silent = DateTime.now().difference(lastHeard);
+      if (silent > const Duration(seconds: 45)) {
+        if (!done.isCompleted) {
+          done.completeError(
+            StateError(
+              'no reply from control for ${silent.inSeconds}s; reconnecting',
+            ),
+          );
+        }
+        return;
+      }
+      ws.sink.add('ping');
+    });
     final status = Timer.periodic(const Duration(seconds: 5), (_) {
       final msg = report().encode();
       if (msg != lastSent ||
@@ -242,9 +257,9 @@ class ControlClient {
         lastSentAt = DateTime.now();
       }
     });
-    final done = Completer<void>();
     final sub = ws.stream.listen(
       (m) {
+        lastHeard = DateTime.now();
         if (m is String && m.contains('"peers_changed"')) _changed.add(null);
       },
       onDone: () => done.isCompleted ? null : done.complete(),

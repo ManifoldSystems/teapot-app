@@ -28,6 +28,7 @@ class TeapotAgent {
   String phase = 'starting'; // starting | pending | approved | error
   String? error;
   bool presence = false;
+  DateTime? presenceSince;
   bool exitEnabled = false;
   int allowed = 0;
   Map<String, String> _names = {};
@@ -57,6 +58,12 @@ class TeapotAgent {
         _report,
         _stop.future,
         onState: (on) {
+          if (on && !presence) {
+            presenceSince = DateTime.now();
+            log('presence connected');
+          } else if (!on && presence) {
+            log('presence lost');
+          }
           presence = on;
           push();
         },
@@ -177,6 +184,7 @@ class TeapotAgent {
       'control': settings.controlUrl,
       'approve_url': _control?.approveUrl,
       'presence': presence,
+      'presence_since': presenceSince?.toIso8601String().substring(11, 19),
       'exit_enabled': exitEnabled,
       'allowed': allowed,
       'allow_lan': settings.allowLan,

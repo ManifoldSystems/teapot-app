@@ -141,7 +141,11 @@ class _PhaseCard extends StatelessWidget {
               '${snapshot['name'] ?? ''}${nodeId == null ? '' : ' · ${l10n.deviceCode} ${nodeId.substring(0, 8)}'}',
             ),
             Text(
-              online ? l10n.presenceOnline : l10n.presenceOffline,
+              online
+                  ? (snapshot['presence_since'] != null
+                        ? l10n.presenceSince('${snapshot['presence_since']}')
+                        : l10n.presenceOnline)
+                  : l10n.presenceOffline,
               style: TextStyle(color: online ? Colors.green : scheme.outline),
             ),
             if (error != null) ...[

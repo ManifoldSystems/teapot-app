@@ -499,6 +499,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'refused'**
   String get targetRefused;
+
+  /// No description provided for @presenceSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to control since {time}'**
+  String presenceSince(String time);
 }
 
 class _AppLocalizationsDelegate

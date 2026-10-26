@@ -223,4 +223,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get targetRefused => 'ditolak';
+
+  @override
+  String presenceSince(String time) {
+    return 'Terhubung ke control sejak $time';
+  }
 }
