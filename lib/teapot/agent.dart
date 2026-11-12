@@ -162,11 +162,23 @@ class TeapotAgent {
     await changes.cancel();
   }
 
+  bool _syncing = false;
+
+  void _denyExit() {
+    exitEnabled = false;
+    allowed = 0;
+    _exit!.setAllowed({});
+  }
+
   Future<void> _sync() async {
+    if (_syncing) return;
+    _syncing = true;
     final control = _control!;
     final previousError = error;
     try {
-      final list = await control.allowlist();
+      final list = await control.allowlist().timeout(
+        const Duration(seconds: 20),
+      );
       if (exitEnabled != list.exitEnabled) {
         log(
           list.exitEnabled
@@ -177,18 +189,22 @@ class TeapotAgent {
       exitEnabled = list.exitEnabled;
       allowed = list.allow.length;
       _exit!.setAllowed(list.allow);
-      _peers = await control.peers();
+      _peers = await control.peers().timeout(const Duration(seconds: 10));
       _names = {for (final p in _peers) p.nodeId: p.label};
       phase = 'approved';
       error = null;
     } on ApiException catch (e) {
+      _denyExit();
       if (e.isPending) {
         phase = 'pending';
       } else {
         error = e.toString();
       }
     } catch (e) {
+      _denyExit();
       error = 'sync: $e';
+    } finally {
+      _syncing = false;
     }
     if (error != null && error != previousError) {
       log(error!, level: 'warn', source: 'control');

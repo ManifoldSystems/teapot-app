@@ -53,3 +53,6 @@ app.*.map.json
 *.pem
 *.p12
 *.mobileprovision
+android/key.properties
+*.jks
+*.keystore
