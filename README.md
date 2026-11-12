@@ -5,7 +5,13 @@ mesh can leave the internet through the phone's SIM. Peer-to-peer over
 [iroh](https://iroh.computer), with a self-hosted
 [teapot-control](https://github.com/ManifoldSystems/teapot-control) deployment.
 
+Distributed as source code only. Build and sign your own app; no prebuilt APK
+or app-store package is provided. Release signing is covered in
+[CONTRIBUTING.md](CONTRIBUTING.md#release-signing).
+
 ```bash
+git clone https://github.com/ManifoldSystems/teapot-app.git
+cd teapot-app
 flutter pub get
 flutter test
 flutter build apk --debug
