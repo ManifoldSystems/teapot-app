@@ -9,7 +9,7 @@ class TeapotSettings {
     required this.allowLan,
   });
 
-  static const defaultControl = 'https://teapot.example.com';
+  static const defaultControl = String.fromEnvironment('TEAPOT_CONTROL');
   static const _kControl = 'teapot.control_url';
   static const _kName = 'teapot.device_name';
   static const _kLan = 'teapot.allow_lan';
@@ -19,6 +19,16 @@ class TeapotSettings {
   /// Empty means "derive from the node id" (android-xxxxxx).
   final String deviceName;
   final bool allowLan;
+
+  static bool isValidControlUrl(String value) {
+    final uri = Uri.tryParse(value);
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty &&
+        uri.userInfo.isEmpty &&
+        !uri.hasQuery &&
+        !uri.hasFragment;
+  }
 
   static Future<TeapotSettings> load() async {
     final p = await SharedPreferences.getInstance();

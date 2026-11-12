@@ -214,6 +214,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get controlUrlTitle => 'URL control';
 
   @override
+  String get controlUrlInvalid =>
+      'Masukkan URL http(s) tanpa kredensial, kueri, atau fragmen.';
+
+  @override
   String get deviceNameTitle => 'Nama device';
 
   @override

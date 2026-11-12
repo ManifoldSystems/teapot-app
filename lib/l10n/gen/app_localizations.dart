@@ -482,6 +482,12 @@ abstract class AppLocalizations {
   /// **'Control URL'**
   String get controlUrlTitle;
 
+  /// No description provided for @controlUrlInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an http(s) URL without credentials, query or fragment.'**
+  String get controlUrlInvalid;
+
   /// No description provided for @deviceNameTitle.
   ///
   /// In en, this message translates to:

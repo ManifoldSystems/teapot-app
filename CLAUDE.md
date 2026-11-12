@@ -3,14 +3,14 @@
 Flutter app for [Teapot](https://github.com/ManifoldSystems/teapot). v1 turns an
 **Android phone into an exit node**: other approved devices in the mesh leave
 the internet through the phone's SIM. Built from `Omniflow-id/Omniflow-Flutter-Starter`
-(provider, go_router, l10n en/id, talker, toastification). Private; owner Eric.
+(provider, go_router, l10n en/id, talker, toastification). MIT licensed.
 
 Related repos and notes:
 
 - `ManifoldSystems/teapot` — Rust agent; **`docs/protocol.md` is the wire spec**
   this app must match byte for byte. Change it there first.
-- `ManifoldSystems/teapot-control` — control plane at `https://teapot.example.com`.
-- private deployment notes — history, fleet, lessons.
+- `ManifoldSystems/teapot-control` — self-hosted control plane.
+  Set its URL in Settings or with `--dart-define=TEAPOT_CONTROL=<URL>` at build time.
 
 ## Layout
 
@@ -53,9 +53,9 @@ SDK licenses is the owner's action: `flutter doctor --android-licenses`.
   A tab's `ListView` must be `shrinkWrap: true` with
   `NeverScrollableScrollPhysics`, or it throws and a **release build shows a
   blank tab**. This hid the approve button on the first device test.
-- `adb exec-out screencap` on this vivo prints a "Multiple displays" warning
+- `adb exec-out screencap` on some devices prints a "Multiple displays" warning
   into the PNG; use `adb shell screencap -p /sdcard/x.png` + `adb pull`.
-- Maven Central blocks the office IP ("open proxy"). Build with Gradle going
+- If Maven Central blocks a network IP ("open proxy"), build with Gradle going
   through the local teapot proxy, Google's repo direct:
 
   ```bash
@@ -77,7 +77,7 @@ SDK licenses is the owner's action: `flutter doctor --android-licenses`.
 
 ## Testing on a device
 
-1. Install the APK on the phone with the test Telkomsel SIM; Start.
+1. Install the APK on a test phone; set your control URL in Settings, then Start.
 2. Approve from the status screen ("Open approval page") or copy the link to a laptop.
 3. Turn exit on for it in the dashboard.
 4. From a Mac: `teapot service install --exit <phone name>` (or `teapot proxy <name>`),

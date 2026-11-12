@@ -2,13 +2,20 @@
 
 Turns an Android phone into a Teapot **exit node**: approved devices in your
 mesh can leave the internet through the phone's SIM. Peer-to-peer over
-[iroh](https://iroh.computer); control plane at `https://teapot.example.com`.
+[iroh](https://iroh.computer), with a self-hosted
+[teapot-control](https://github.com/ManifoldSystems/teapot-control) deployment.
 
 ```bash
 flutter pub get
 flutter test
 flutter build apk --debug
 ```
+
+Set your deployment's **Control URL** in Settings before starting the agent.
+New installs have no default server. A custom build can supply one with
+`--dart-define=TEAPOT_CONTROL=https://teapot.example.com` (replace the example URL).
+Previously saved settings are retained. For iOS builds, select your own signing
+team in Xcode.
 
 ## Logs
 

@@ -215,6 +215,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get controlUrlTitle => 'Control URL';
 
   @override
+  String get controlUrlInvalid =>
+      'Enter an http(s) URL without credentials, query or fragment.';
+
+  @override
   String get deviceNameTitle => 'Device name';
 
   @override

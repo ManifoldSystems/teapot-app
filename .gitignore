@@ -45,8 +45,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Environment files are tracked on purpose.
-#   .env      -> local development
-#   .env.prod -> production
-# This repository is private, and keeping real values in git makes a deploy a
-# checkout instead of a secret-shuffling ritual. Do not add .env rules back.
+# Local credentials and signing material
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.mobileprovision

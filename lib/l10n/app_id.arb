@@ -64,6 +64,7 @@
   "logTitle": "Log",
   "teapotSettingsTitle": "Teapot",
   "controlUrlTitle": "URL control",
+  "controlUrlInvalid": "Masukkan URL http(s) tanpa kredensial, kueri, atau fragmen.",
   "deviceNameTitle": "Nama device",
   "deviceNameHint": "Kosong: android-<kode>",
   "allowLanTitle": "Izinkan LAN",

@@ -24,6 +24,7 @@ class _TeapotSettingsCardState extends State<TeapotSettingsCard> {
   bool _allowLan = false;
   bool _batteryExempt = true;
   bool _loaded = false;
+  bool _invalidControl = false;
 
   @override
   void initState() {
@@ -47,10 +48,16 @@ class _TeapotSettingsCardState extends State<TeapotSettingsCard> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     final ctrl = context.read<TeapotController>();
+    final control = _control.text.trim().isEmpty
+        ? TeapotSettings.defaultControl
+        : _control.text.trim();
+    if (!TeapotSettings.isValidControlUrl(control)) {
+      setState(() => _invalidControl = true);
+      return;
+    }
+    setState(() => _invalidControl = false);
     await TeapotSettings(
-      controlUrl: _control.text.trim().isEmpty
-          ? TeapotSettings.defaultControl
-          : _control.text.trim(),
+      controlUrl: control,
       deviceName: _name.text.trim(),
       allowLan: _allowLan,
     ).save();
@@ -78,7 +85,11 @@ class _TeapotSettingsCardState extends State<TeapotSettingsCard> {
             TextField(
               controller: _control,
               keyboardType: TextInputType.url,
-              decoration: InputDecoration(labelText: l10n.controlUrlTitle),
+              decoration: InputDecoration(
+                labelText: l10n.controlUrlTitle,
+                hintText: 'https://teapot.example.com',
+                errorText: _invalidControl ? l10n.controlUrlInvalid : null,
+              ),
             ),
             const Gap(Spacing.sm),
             TextField(

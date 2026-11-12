@@ -59,6 +59,10 @@ class TeapotAgent {
       log('local log storage unavailable: $e', level: 'warn');
     }
     log('agent starting');
+    if (!TeapotSettings.isValidControlUrl(settings.controlUrl)) {
+      _fail('Set a valid http(s) control URL in Settings before starting.');
+      return;
+    }
     _logTimer = Timer.periodic(const Duration(seconds: 5), (_) => _flushLogs());
     try {
       final info = await DeviceInfoPlugin().androidInfo;

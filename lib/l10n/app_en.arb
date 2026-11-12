@@ -70,6 +70,7 @@
   "logTitle": "Log",
   "teapotSettingsTitle": "Teapot",
   "controlUrlTitle": "Control URL",
+  "controlUrlInvalid": "Enter an http(s) URL without credentials, query or fragment.",
   "deviceNameTitle": "Device name",
   "deviceNameHint": "Empty: android-<code>",
   "allowLanTitle": "Allow LAN",
