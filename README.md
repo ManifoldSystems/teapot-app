@@ -40,3 +40,8 @@ See `CLAUDE.md` for layout, decisions, and the device test procedure. Wire
 format: `ManifoldSystems/teapot` → `docs/protocol.md`.
 
 Started from Omniflow-Flutter-Starter (MIT, see LICENSE).
+
+## Contributing and security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development checks and pull requests,
+and [SECURITY.md](SECURITY.md) for vulnerability reporting.
